@@ -14,4 +14,7 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('api/queue-test', [App\Http\Controllers\Api\QueueTestController::class, 'dispatch'])
+    ->name('api.queue-test');
+
 require __DIR__.'/settings.php';
