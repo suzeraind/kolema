@@ -122,7 +122,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ## Test Enforcement
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `sail test` with a specific filename or filter.
 
 
 === inertia-laravel/core rules ===
@@ -169,8 +169,8 @@ Route::get('/users', function () {
 
 ## Do Things the Laravel Way
 
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
-- If you're creating a generic PHP class, use `php artisan make:class`.
+- Use `sail make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
+- If you're creating a generic PHP class, use `sail make:class`.
 - Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
 
 ### Database
@@ -181,7 +181,7 @@ Route::get('/users', function () {
 - Use Laravel's query builder for very complex database operations.
 
 ### Model Creation
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `sail make:model`.
 
 ### APIs & Eloquent Resources
 - For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
@@ -205,7 +205,7 @@ Route::get('/users', function () {
 ### Testing
 - When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
 - Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] {name}` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
+- When creating tests, make use of `sail make:test [options] {name}` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
 
 ### Vite Error
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
@@ -243,7 +243,7 @@ Wayfinder generates TypeScript functions and types for Laravel controllers and r
 - Always use `search-docs` to check wayfinder correct usage before implementing any features.
 - Always Prefer named imports for tree-shaking (e.g., `import { show } from '@/actions/...'`)
 - Avoid default controller imports (prevents tree-shaking)
-- Run `php artisan wayfinder:generate` after route changes if Vite plugin isn't installed
+- Run `sail wayfinder:generate` after route changes if Vite plugin isn't installed
 
 ### Feature Overview
 - Form Support: Use `.form()` with `--with-form` flag for HTML form attributes — `<form {...store.form()}>` → `action="/posts" method="post"`
@@ -302,7 +302,7 @@ If your application uses the `<Form>` component from Inertia, you can use Wayfin
 - If you need to verify a feature is working, write or update a Unit / Feature test.
 
 ### Pest Tests
-- All tests must be written using Pest. Use `php artisan make:test --pest {name}`.
+- All tests must be written using Pest. Use `sail make:test --pest {name}`.
 - You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
 - Tests should test all of the happy paths, failure paths, and weird paths.
 - Tests live in the `tests/Feature` and `tests/Unit` directories.
@@ -315,9 +315,9 @@ it('is true', function () {
 
 ### Running Tests
 - Run the minimal number of tests using an appropriate filter before finalizing code edits.
-- To run all tests: `php artisan test`.
-- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+- To run all tests: `sail test`.
+- To run all tests in a file: `sail test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `sail test --filter=testName` (recommended after making a change to a related file).
 - When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
 
 ### Pest Assertions
