@@ -14,6 +14,13 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::middleware(['auth', 'verified'])
+    ->controller(App\Http\Controllers\WebSocketDemoController::class)
+    ->group(function () {
+        Route::get('websocket-demo', 'index')->name('websocket.demo');
+        Route::post('api/websocket/send', 'sendMessage')->name('api.websocket.send');
+    });
+
 Route::get('api/queue-test', [App\Http\Controllers\Api\QueueTestController::class, 'dispatch'])
     ->name('api.queue-test');
 

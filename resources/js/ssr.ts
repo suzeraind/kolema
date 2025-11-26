@@ -6,6 +6,7 @@ import { renderToString } from 'vue/server-renderer';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+
 createServer(
     (page) =>
         createInertiaApp({
