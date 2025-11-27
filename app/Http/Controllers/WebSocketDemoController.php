@@ -43,7 +43,7 @@ class WebSocketDemoController extends Controller
     /**
      * Send a message via WebSocket.
      */
-    public function sendMessage(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:500'],
@@ -64,7 +64,7 @@ class WebSocketDemoController extends Controller
     /**
      * Delete a message.
      */
-    public function deleteMessage(Message $message): RedirectResponse
+    public function destroy(Message $message): RedirectResponse
     {
         abort_if($message->user_id !== auth()->id(), 403, 'Unauthorized to delete this message');
 

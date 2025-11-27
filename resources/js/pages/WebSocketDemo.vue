@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { store, destroy } from '@/actions/App/Http/Controllers/WebSocketDemoController';
 import { demo } from '@/routes/websocket';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -35,6 +36,7 @@ const form = useForm({
     message: '',
 });
 
+
 if (typeof window !== 'undefined') {
     const { channel } = useEcho<Message>('demo');
 
@@ -58,19 +60,19 @@ if (typeof window !== 'undefined') {
     });
 }
 
-const sendMessage = () => {
+const send = () => {
     if (!form.message.trim()) return;
 
-    form.post('/api/websocket/send', {
+    form.submit(store(), {
         preserveScroll: true,
         onSuccess: () => form.reset('message'),
     });
 };
 
-const deleteMessage = (messageId: number) => {
+const remove = (messageId: number) => {
     if (!confirm('Вы уверены, что хотите удалить это сообщение?')) return;
 
-    form.delete(`/api/websocket/message/${messageId}`, {
+    form.submit(destroy(messageId), {
         preserveScroll: true,
     });
 };
@@ -153,7 +155,7 @@ const formatTime = (timestamp: string) =>
                                     v-if="currentUser && msg.userId === currentUser.id"
                                     type="button"
                                     class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                                    @click="deleteMessage(msg.id)"
+                                    @click="remove(msg.id)"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -194,13 +196,13 @@ const formatTime = (timestamp: string) =>
                             type="text"
                             class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                             placeholder="Введите сообщение..."
-                            @keyup.enter="sendMessage"
+                            @keyup.enter="send"
                         />
                         <button
                             type="button"
                             :disabled="!form.message.trim() || form.processing"
                             class="rounded-lg bg-blue-600 px-6 py-2 font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-800"
-                            @click="sendMessage"
+                            @click="send"
                         >
                             {{ form.processing ? 'Отправка...' : 'Отправить' }}
                         </button>
