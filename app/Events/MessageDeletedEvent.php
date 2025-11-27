@@ -2,14 +2,13 @@
 
 namespace App\Events;
 
-use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSentEvent implements ShouldBroadcast
+class MessageDeletedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,7 +16,7 @@ class MessageSentEvent implements ShouldBroadcast
      * Create a new event instance.
      */
     public function __construct(
-        public Message $message
+        public int $messageId
     ) {
         //
     }
@@ -42,11 +41,7 @@ class MessageSentEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'message' => $this->message->message,
-            'user' => $this->message->user->name,
-            'userId' => $this->message->user_id,
-            'timestamp' => $this->message->created_at->toIso8601String(),
+            'messageId' => $this->messageId,
         ];
     }
 }

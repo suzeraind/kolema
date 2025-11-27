@@ -4,24 +4,35 @@ import { demo } from '@/routes/websocket';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useEcho } from '@laravel/echo-vue';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 interface Message {
+    id: number;
     message: string;
     user: string;
+    userId: number;
     timestamp: string;
 }
+
+interface Props {
+    initialMessages?: Message[];
+    currentUser?: {
+        id: number;
+        name: string;
+    };
+}
+
+const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'WebSocket Demo', href: demo().url },
 ];
 
-const messages = ref<Message[]>([]);
+const messages = ref<Message[]>(props.initialMessages || []);
 const isConnected = ref(false);
 
 const form = useForm({
     message: '',
-    user: 'User_' + Math.floor(Math.random() * 1000),
 });
 
 if (typeof window !== 'undefined') {
@@ -37,6 +48,14 @@ if (typeof window !== 'undefined') {
         messages.value.push(data);
         scrollToBottom();
     });
+
+    channel().listen('MessageDeletedEvent', (data: { messageId: number; }) => {
+        console.log('Message deleted:', data);
+        const index = messages.value.findIndex(m => m.id === data.messageId);
+        if (index !== -1) {
+            messages.value.splice(index, 1);
+        }
+    });
 }
 
 const sendMessage = () => {
@@ -45,6 +64,14 @@ const sendMessage = () => {
     form.post('/api/websocket/send', {
         preserveScroll: true,
         onSuccess: () => form.reset('message'),
+    });
+};
+
+const deleteMessage = (messageId: number) => {
+    if (!confirm('Вы уверены, что хотите удалить это сообщение?')) return;
+
+    form.delete(`/api/websocket/message/${messageId}`, {
+        preserveScroll: true,
     });
 };
 
@@ -110,17 +137,38 @@ const formatTime = (timestamp: string) =>
                     </div>
 
                     <div
-                        v-for="(msg, index) in messages"
-                        :key="index"
+                        v-for="msg in messages"
+                        :key="msg.id"
                         class="rounded-lg bg-gray-50 p-3 dark:bg-gray-700"
                     >
                         <div class="mb-1 flex items-center justify-between">
                             <span class="font-semibold text-blue-600 dark:text-blue-400">
                                 {{ msg.user }}
                             </span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ formatTime(msg.timestamp) }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ formatTime(msg.timestamp) }}
+                                </span>
+                                <button
+                                    v-if="currentUser && msg.userId === currentUser.id"
+                                    type="button"
+                                    class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                    @click="deleteMessage(msg.id)"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <p class="text-gray-800 dark:text-gray-200">
                             {{ msg.message }}
@@ -131,27 +179,6 @@ const formatTime = (timestamp: string) =>
 
             <!-- Input Form -->
             <div class="space-y-3">
-                <div>
-                    <label
-                        for="username"
-                        class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                        Ваше имя
-                    </label>
-                    <input
-                        id="username"
-                        v-model="form.user"
-                        type="text"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        placeholder="Введите ваше имя"
-                    />
-                    <div
-                        v-if="form.errors.user"
-                        class="mt-1 text-sm text-red-600"
-                    >
-                        {{ form.errors.user }}
-                    </div>
-                </div>
 
                 <div>
                     <label

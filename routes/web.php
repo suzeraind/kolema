@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])
     ->group(function () {
         Route::get('websocket-demo', 'index')->name('websocket.demo');
         Route::post('api/websocket/send', 'sendMessage')->name('api.websocket.send');
+        Route::delete('api/websocket/message/{message}', 'deleteMessage')->name('api.websocket.delete');
     });
 
 Route::get('api/queue-test', [App\Http\Controllers\Api\QueueTestController::class, 'dispatch'])
