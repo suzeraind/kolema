@@ -25,16 +25,18 @@ const form = useForm({
 });
 
 if (typeof window !== 'undefined') {
-    const { channel } = useEcho<Message>(
-        'demo',
-        "MessageSentEvent",
-        (data: Message) => {
-            console.log('Message received:', data);
-            messages.value.push(data);
-            scrollToBottom();
-            isConnected.value = true;
-        }
-    );
+    const { channel } = useEcho<Message>('demo');
+
+    channel().subscribed(() => {
+        console.log('Channel subscribed!');
+        isConnected.value = true;
+    });
+
+    channel().listen('MessageSentEvent', (data: Message) => {
+        console.log('Message received:', data);
+        messages.value.push(data);
+        scrollToBottom();
+    });
 }
 
 const sendMessage = () => {
