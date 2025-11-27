@@ -24,7 +24,7 @@ const form = useForm({
     user: 'User_' + Math.floor(Math.random() * 1000),
 });
 
-if (window !== undefined) {
+if (typeof window !== 'undefined') {
     const { channel } = useEcho<Message>(
         'demo',
         "MessageSentEvent",
